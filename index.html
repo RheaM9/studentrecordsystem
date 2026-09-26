@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Record System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .action {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Student Record System</h1>
+
+    <h2>Add Student</h2>
+
+    <form id="studentForm">
+
+        <label>Student ID</label>
+        <input type="text" id="studentId" required>
+
+        <label>Name</label>
+        <input type="text" id="studentName" required>
+
+        <label>Program</label>
+        <input type="text" id="studentProgram" required>
+
+        <button type="submit">Add Student</button>
+
+    </form>
+
+    <h2>Student Records</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Program</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="studentTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const form = document.getElementById("studentForm");
+    const table = document.getElementById("studentTable");
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const studentId =
+            document.getElementById("studentId").value;
+
+        const name =
+            document.getElementById("studentName").value;
+
+        const program =
+            document.getElementById("studentProgram").value;
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${studentId}</td>
+            <td>${name}</td>
+            <td>${program}</td>
+            <td>Active</td>
+            <td>
+                <span class="action" onclick="editStudent(this)">
+                    Edit
+                </span>
+
+                <span class="action" onclick="archiveStudent(this)">
+                    Archive
+                </span>
+            </td>
+        `;
+
+        table.appendChild(row);
+
+        form.reset();
+
+        alert("Student Added Successfully!");
+
+    });
+
+
+    function editStudent(button) {
+
+        const row = button.parentElement.parentElement;
+
+        const studentId = row.cells[0].innerText;
+        const name = row.cells[1].innerText;
+        const program = row.cells[2].innerText;
+
+        const newName = prompt("Enter new name:", name);
+
+        if (newName !== null && newName.trim() !== "") {
+
+            row.cells[1].innerText = newName;
+
+            alert("Student Updated Successfully!");
+
+        }
+    }
+
+
+    function archiveStudent(button) {
+
+        const row = button.parentElement.parentElement;
+
+        if (confirm("Archive this student?")) {
+
+            row.cells[3].innerText = "Archived";
+
+            row.style.display = "none";
+
+            alert("Student Archived Successfully!");
+
+        }
+    }
+
+</script>
+
+</body>
+</html>
