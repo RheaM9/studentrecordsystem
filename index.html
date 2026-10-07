@@ -4,227 +4,729 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Record System</title>
-
     <style>
         * {
             box-sizing: border-box;
         }
-
         body {
             font-family: Arial, sans-serif;
             background: #f4f6f8;
             margin: 0;
-            padding: 30px 15px;
+            padding: 25px 15px;
             color: #333;
         }
-
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: auto;
+        }
+        .header {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 0;
+            color: #666;
+        }
+        /* SUMMARY CARDS */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
         }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
+        .card h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            color: #666;
         }
-
-        h2 {
-            margin-top: 30px;
+        .card .number {
+            font-size: 30px;
+            font-weight: bold;
         }
-
-        form {
-            max-width: 600px;
-            margin: auto;
+        /* MESSAGE */
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: bold;
         }
-
+        .message.success {
+            background: #dff5e4;
+            color: #176b2c;
+        }
+        .message.error {
+            background: #ffe0e0;
+            color: #a30000;
+        }
+        /* FORM */
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
         label {
             display: block;
             font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
-
-        input {
+        input,
+        select {
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 7px;
+            font-size: 14px;
         }
-
+        input:focus,
+        select:focus {
+            outline: 2px solid #555;
+        }
+        .form-buttons {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
             border: none;
-            border-radius: 5px;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary {
             background: #333;
             color: white;
-            cursor: pointer;
         }
-
+        .btn-secondary {
+            background: #e5e5e5;
+            color: #333;
+        }
+        .btn-edit {
+            background: #333;
+            color: white;
+        }
+        .btn-archive {
+            background: #777;
+            color: white;
+        }
+        .btn-restore {
+            background: #555;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.85;
+        }
+        /* SEARCH */
+        .search-filter {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        /* TABLE */
+        .table-container {
+            overflow-x: auto;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            min-width: 750px;
         }
-
-        th, td {
+        th,
+        td {
             padding: 12px;
-            border: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
             text-align: left;
         }
-
         th {
-            background: #eee;
+            background: #f1f1f1;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
-
-        .action {
-            margin-right: 10px;
-            cursor: pointer;
+        tr:hover {
+            background: #fafafa;
         }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 15px;
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .active {
+            background: #dff5e4;
+            color: #176b2c;
+        }
+        .archived {
+            background: #eeeeee;
+            color: #555;
+        }
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+        .date {
+            font-size: 13px;
+            color: #666;
+        }
+        /* MOBILE */
+        @media (max-width: 800px) {
+            .summary {
+                grid-template-columns: 1fr;
             }
-
-            table {
-                display: block;
-                overflow-x: auto;
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .search-filter {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 23px;
+            }
+            .section {
+                padding: 18px;
             }
         }
     </style>
 </head>
-
 <body>
-
 <div class="container">
-
-    <h1>Student Record System</h1>
-
-    <h2>Add Student</h2>
-
-    <form id="studentForm">
-
-        <label>Student ID</label>
-        <input type="text" id="studentId" required>
-
-        <label>Name</label>
-        <input type="text" id="studentName" required>
-
-        <label>Program</label>
-        <input type="text" id="studentProgram" required>
-
-        <button type="submit">Add Student</button>
-
-    </form>
-
-    <h2>Student Records</h2>
-
-    <table>
-
-        <thead>
-            <tr>
-                <th>Student ID</th>
-                <th>Name</th>
-                <th>Program</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody id="studentTable">
-
-        </tbody>
-
-    </table>
-
+    <!-- HEADER -->
+    <div class="header">
+        <h1>Student Record System</h1>
+        <p>Manage active and archived student records.</p>
+    </div>
+    <!-- SUMMARY -->
+    <div class="summary">
+        <div class="card">
+            <h3>Total Students</h3>
+            <div class="number" id="totalCount">0</div>
+        </div>
+        <div class="card">
+            <h3>Active Students</h3>
+            <div class="number" id="activeCount">0</div>
+        </div>
+        <div class="card">
+            <h3>Archived Students</h3>
+            <div class="number" id="archivedCount">0</div>
+        </div>
+    </div>
+    <!-- MESSAGE -->
+    <div id="message" class="message"></div>
+    <!-- ADD STUDENT -->
+    <div class="section">
+        <h2>Add Student</h2>
+        <form id="studentForm">
+            <div class="form-grid">
+                <div>
+                    <label for="studentId">Student ID *</label>
+                    <input
+                        type="text"
+                        id="studentId"
+                        placeholder="Example: 2026-001"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="name">Student Name *</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter student name"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="program">Program / Course *</label>
+                    <select id="program" required>
+                        <option value="">Select Program</option>
+                        <option value="BSIT">BSIT</option>
+                        <option value="BSOAD">BSOAD</option>
+                        <option value="BSED">BSED</option>
+                        <option value="BSCRIM">BSCRIM</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-buttons">
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    id="saveButton"
+                >
+                    Add Student
+                </button>
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    onclick="clearForm()"
+                >
+                    Clear Form
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- ACTIVE STUDENTS -->
+    <div class="section">
+        <h2>Active Student Records</h2>
+        <!-- SEARCH AND FILTER -->
+        <div class="search-filter">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search Student ID or Name..."
+                oninput="displayStudents()"
+            >
+            <select
+                id="programFilter"
+                onchange="displayStudents()"
+            >
+                <option value="">All Programs</option>
+                <option value="BSIT">BSIT</option>
+                <option value="BSOAD">BSOAD</option>
+                <option value="BSED">BSED</option>
+                <option value="BSCRIM">BSCRIM</option>
+            </select>
+        </div>
+        <p id="activeResultCount" class="date"></p>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Program</th>
+                        <th>Date Added</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTable"></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ARCHIVED -->
+    <div class="section">
+        <h2>Archived Student Records</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Program</th>
+                        <th>Date Added</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="archivedTable"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
 <script>
-
-    const form = document.getElementById("studentForm");
-    const table = document.getElementById("studentTable");
-
-    form.addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        const studentId =
-            document.getElementById("studentId").value;
-
-        const name =
-            document.getElementById("studentName").value;
-
-        const program =
-            document.getElementById("studentProgram").value;
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${studentId}</td>
-            <td>${name}</td>
-            <td>${program}</td>
-            <td>Active</td>
-            <td>
-                <span class="action" onclick="editStudent(this)">
-                    Edit
-                </span>
-
-                <span class="action" onclick="archiveStudent(this)">
-                    Archive
-                </span>
-            </td>
-        `;
-
-        table.appendChild(row);
-
-        form.reset();
-
-        alert("Student Added Successfully!");
-
-    });
-
-
-    function editStudent(button) {
-
-        const row = button.parentElement.parentElement;
-
-        const studentId = row.cells[0].innerText;
-        const name = row.cells[1].innerText;
-        const program = row.cells[2].innerText;
-
-        const newName = prompt("Enter new name:", name);
-
-        if (newName !== null && newName.trim() !== "") {
-
-            row.cells[1].innerText = newName;
-
-            alert("Student Updated Successfully!");
-
+    /* STUDENT DATA */
+    let students = JSON.parse(
+        localStorage.getItem("students")
+    ) || [];
+    let editingIndex = -1;
+    /* SAVE DATA */
+    function saveData() {
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+    }
+    /* SHOW MESSAGE */
+    function showMessage(text, type = "success") {
+        const message =
+            document.getElementById("message");
+        message.innerText = text;
+        message.className =
+            "message " + type;
+        message.style.display = "block";
+        setTimeout(function() {
+            message.style.display = "none";
+        }, 3000);
+    }
+    /* STUDENT ID VALIDATION */
+    function validStudentId(studentId) {
+        const pattern =
+            /^[A-Za-z0-9-]{3,20}$/;
+        return pattern.test(studentId);
+    }
+    /* CHECK DUPLICATE ID */
+    function studentIdExists(studentId, ignoreIndex = -1) {
+        return students.some(function(student, index) {
+            if (index === ignoreIndex) {
+                return false;
+            }
+            return student.studentId.toLowerCase()
+                === studentId.toLowerCase();
+        });
+    }
+    /* UPDATE SUMMARY */
+    function updateSummary() {
+        const total =
+            students.length;
+        const active =
+            students.filter(
+                student => student.status === "Active"
+            ).length;
+        const archived =
+            students.filter(
+                student => student.status === "Archived"
+            ).length;
+        document.getElementById("totalCount")
+            .innerText = total;
+        document.getElementById("activeCount")
+            .innerText = active;
+        document.getElementById("archivedCount")
+            .innerText = archived;
+    }
+    /* DISPLAY STUDENTS */
+    function displayStudents() {
+        const table =
+            document.getElementById("studentTable");
+        const archivedTable =
+            document.getElementById("archivedTable");
+        const search =
+            document.getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+        const programFilter =
+            document.getElementById("programFilter")
+                .value;
+        table.innerHTML = "";
+        archivedTable.innerHTML = "";
+        let activeDisplayed = 0;
+        students.forEach(function(student, index) {
+            const matchesSearch =
+                student.studentId
+                    .toLowerCase()
+                    .includes(search)
+                ||
+                student.name
+                    .toLowerCase()
+                    .includes(search);
+            const matchesProgram =
+                programFilter === ""
+                ||
+                student.program === programFilter;
+            if (!matchesSearch || !matchesProgram) {
+                return;
+            }
+            const row =
+                document.createElement("tr");
+            row.innerHTML = `
+                <td>${escapeHTML(student.studentId)}</td>
+                <td>${escapeHTML(student.name)}</td>
+                <td>${escapeHTML(student.program)}</td>
+                <td class="date">
+                    ${escapeHTML(student.dateAdded)}
+                </td>
+                <td>
+                    <span class="status ${
+                        student.status === "Active"
+                            ? "active"
+                            : "archived"
+                    }">
+                        ${student.status}
+                    </span>
+                </td>
+                <td>
+                    <div class="actions">
+                        ${
+                            student.status === "Active"
+                            ?
+                            `
+                            <button
+                                class="btn-edit"
+                                onclick="editStudent(${index})"
+                            >
+                                Edit
+                            </button>
+                            <button
+                                class="btn-archive"
+                                onclick="archiveStudent(${index})"
+                            >
+                                Archive
+                            </button>
+                            `
+                            :
+                            `
+                            <button
+                                class="btn-restore"
+                                onclick="restoreStudent(${index})"
+                            >
+                                Restore
+                            </button>
+                            `
+                        }
+                    </div>
+                </td>
+            `;
+            if (student.status === "Active") {
+                table.appendChild(row);
+                activeDisplayed++;
+            } else {
+                archivedTable.appendChild(row);
+            }
+        });
+        if (table.innerHTML === "") {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty">
+                        No active student records found.
+                    </td>
+                </tr>
+            `;
+        }
+        if (archivedTable.innerHTML === "") {
+            archivedTable.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty">
+                        No archived student records.
+                    </td>
+                </tr>
+            `;
+        }
+        document.getElementById("activeResultCount")
+            .innerText =
+            "Showing " +
+            activeDisplayed +
+            " active student(s).";
+        updateSummary();
+    }
+    /* ESCAPE HTML */
+    function escapeHTML(text) {
+        const div =
+            document.createElement("div");
+        div.innerText = text;
+        return div.innerHTML;
+    }
+    /* ADD / UPDATE */
+    document
+        .getElementById("studentForm")
+        .addEventListener("submit", function(event) {
+            event.preventDefault();
+            const studentId =
+                document
+                    .getElementById("studentId")
+                    .value
+                    .trim();
+            const name =
+                document
+                    .getElementById("name")
+                    .value
+                    .trim();
+            const program =
+                document
+                    .getElementById("program")
+                    .value;
+            /* REQUIRED FIELDS */
+            if (
+                studentId === ""
+                ||
+                name === ""
+                ||
+                program === ""
+            ) {
+                showMessage(
+                    "Please complete all required fields.",
+                    "error"
+                );
+                return;
+            }
+            /* STUDENT ID FORMAT */
+            if (!validStudentId(studentId)) {
+                showMessage(
+                    "Invalid Student ID. Use 3-20 letters, numbers, or hyphens only.",
+                    "error"
+                );
+                return;
+            }
+            /* NAME VALIDATION */
+            if (!/^[A-Za-zÀ-ÿ .'-]+$/.test(name)) {
+                showMessage(
+                    "Student name should contain letters only.",
+                    "error"
+                );
+                return;
+            }
+            /* DUPLICATE ID */
+            if (
+                studentIdExists(
+                    studentId,
+                    editingIndex
+                )
+            ) {
+                showMessage(
+                    "Student ID already exists. Please use a different Student ID.",
+                    "error"
+                );
+                return;
+            }
+            /* UPDATE */
+            if (editingIndex !== -1) {
+                students[editingIndex].studentId =
+                    studentId;
+                students[editingIndex].name =
+                    name;
+                students[editingIndex].program =
+                    program;
+                students[editingIndex].status =
+                    "Active";
+                saveData();
+                showMessage(
+                    "Student record updated successfully!",
+                    "success"
+                );
+                editingIndex = -1;
+                document.getElementById("saveButton")
+                    .innerText = "Add Student";
+                clearForm(false);
+                displayStudents();
+                return;
+            }
+            /* ADD */
+            const newStudent = {
+                studentId: studentId,
+                name: name,
+                program: program,
+                status: "Active",
+                dateAdded:
+                    new Date().toLocaleDateString(
+                        "en-US",
+                        {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric"
+                        }
+                    )
+            };
+            students.push(newStudent);
+            saveData();
+            showMessage(
+                "Student added successfully!",
+                "success"
+            );
+            clearForm(false);
+            displayStudents();
+        });
+    /* CLEAR FORM */
+    function clearForm(showNotification = true) {
+        document
+            .getElementById("studentForm")
+            .reset();
+        editingIndex = -1;
+        document.getElementById("saveButton")
+            .innerText = "Add Student";
+        if (showNotification) {
+            showMessage(
+                "Form cleared.",
+                "success"
+            );
         }
     }
-
-
-    function archiveStudent(button) {
-
-        const row = button.parentElement.parentElement;
-
-        if (confirm("Archive this student?")) {
-
-            row.cells[3].innerText = "Archived";
-
-            row.style.display = "none";
-
-            alert("Student Archived Successfully!");
-
+    /* EDIT */
+    function editStudent(index) {
+        const student =
+            students[index];
+        if (student.status !== "Active") {
+            showMessage(
+                "Only active records can be edited.",
+                "error"
+            );
+            return;
         }
+        document.getElementById("studentId")
+            .value = student.studentId;
+        document.getElementById("name")
+            .value = student.name;
+        document.getElementById("program")
+            .value = student.program;
+        editingIndex = index;
+        document.getElementById("saveButton")
+            .innerText = "Save Changes";
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
-
+    /* ARCHIVE */
+    function archiveStudent(index) {
+        const student =
+            students[index];
+        const confirmArchive =
+            confirm(
+                "Are you sure you want to archive this student record?\n\nThe record will NOT be permanently deleted."
+            );
+        if (!confirmArchive) {
+            return;
+        }
+        students[index].status =
+            "Archived";
+        saveData();
+        showMessage(
+            "Student record archived successfully!",
+            "success"
+        );
+        displayStudents();
+    }
+    /* RESTORE */
+    function restoreStudent(index) {
+        const confirmRestore =
+            confirm(
+                "Restore this student record?"
+            );
+        if (!confirmRestore) {
+            return;
+        }
+        students[index].status =
+            "Active";
+        saveData();
+        showMessage(
+            "Student record restored successfully!",
+            "success"
+        );
+        displayStudents();
+    }
+    /* INITIAL DISPLAY */
+    displayStudents();
 </script>
-
 </body>
 </html>
